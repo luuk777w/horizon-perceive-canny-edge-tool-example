@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+service CannyEdgeDetector {
+  rpc DetectEdges (stream DetectEdgesRequest) returns (stream DetectEdgesResponse);
+}
+
+message DetectEdgesRequest {
+  oneof request_data {
+    ImageChunk image_chunk = 1;
+    Parameters parameters = 2;
+  }
+}
+
+message ImageChunk {
+  bytes content = 1; // Chunk of the image
+}
+
+message Parameters {
+  int32 minThreshold = 1;
+  int32 maxThreshold = 2;
+}
+
+message DetectEdgesResponse {
+  bytes image_chunk = 1; // Chunk of the processed image
+}
