@@ -1,4 +1,4 @@
-# horizon-perceive-canny-edge-tool-example
+# Creating a gRPC-based Python Application for Edge Detection with OpenCV
  
 This guide will walk you through the process of integrating gRPC into a Python application designed for edge detection in images, utilizing the OpenCV library. The application architecture is composed of two main components:
 
@@ -65,6 +65,10 @@ message DetectEdgesResponse {
  - The `oneof` keyword in `DetectEdgesRequest` message allows sending either an `ImageChunk` or `Parameters` in each request, not both.
  = `message ImageChunk` and `message Parameters` define the structure for sending image data and edge detection parameters, respectively.
 
+
+> **This guide uses streaming for its requests and responses. This is important as inputs or outputs could be very large. While streaming the input/output adds complexity, it removes the limitations of using buffered requests.**
+
+
 ## Step 2: Generate the gRPC Code
 
 With the `cannyedge.proto` file defined, the next step is to generate the Python code that gRPC uses to serialize, deserialize, and transport your messages over the network. This code generation step creates stubs for the client and server, allowing you to implement the actual logic of your service in Python.
@@ -83,7 +87,7 @@ Run the following command in your terminal, in the directory where your cannyedg
 python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. cannyedge.proto
 ```
 
-This command tells the protobuf compiler to generate Python code (--python_out) and gRPC-specific code (--grpc_python_out) from your .proto file. -I. specifies the directory where your .proto files are located.
+This command tells the protobuf compiler to generate Python code (`--python_out`) and gRPC-specific code (`--grpc_python_out`) from your .proto file. `-I.` specifies the directory where your .proto files are located.
 
 ### What's Generated:
 
@@ -216,7 +220,7 @@ if __name__ == "__main__":
     asyncio.run(serve())
 ```
 
-### Running the Server:
+## Step 5: running the Server:
 
 To run the server, execute the grpc_server.py script. It will start the server and listen on port 50051 for incoming connections.
 
@@ -230,6 +234,8 @@ This server is now capable of receiving image data and parameters from clients, 
 You've successfully set up the gRPC server for your edge detection application. This server uses asynchronous processing to handle streaming requests and responses, making it efficient for processing potentially large images in chunks.
 
 In this guide, we've covered defining the gRPC service, generating Python gRPC code, implementing the edge detection functionality, and setting up the server. With these components, you have a complete system that can process images sent by clients, detect edges, and return the processed images.
+
+### Testing the server
 
 The next step would involve creating a client that can connect to this server, send images and parameters for processing, and receive the processed images. This would complete the end-to-end system for edge detection using gRPC and Python.
 
